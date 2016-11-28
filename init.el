@@ -138,13 +138,13 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(leuven
-                         apropospriate-light
-                         obsidian
-                         spacemacs-dark
-                         spacemacs-light
-                         soft-morning
-                         soft-charcoal
+   dotspacemacs-themes '(tango-plus
+                         atom-one-dark
+                         twilight-bright
+                         espresso                        
+                         sanityinc-tomorrow-day
+                         soft-stone
+                         flatui
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -310,6 +310,8 @@ before packages are loaded. If you are unsure, you should try in setting them in
 `dotspacemacs/user-config' first."
   )
 
+;;:::::::: The all important user-config section ::::::::::::::::::::::::::
+
 (defun dotspacemacs/user-config ()
   "Configuration function for user code.
 This function is called at the very end of Spacemacs initialization after
@@ -317,42 +319,48 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
-  (setq deft-directory "~/Dropbox/Notes")
-  (setq helm-org-rifle-show-path t)
-  (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
-  ;; Agenda
-  (setq org-agenda-window-setup 'current-window)
-  (setq org-agenda-files '("~/Dropbox/org/"
-                           ))
 
-  (setq org-refile-targets '((nil :maxlevel . 9)
-                             (org-agenda-files :maxlevel . 9)))
-  (setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
-  (setq org-refile-use-outline-path t)                  ; Show full paths for refiling
-  (setq-default evil-escape-key-sequence "jj")
-  (setq-default evil-escape-delay 0.2)
+;; === Org Settings ===
+
+  (load-file "~/.spacemacs.d/config/tn-org.el")
+  (setq helm-org-rifle-show-path t)
+  ;;(setq org-todo-keywords
+  ;;      '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
+  ;; file to store general notes
+  ;;(setq org-default-notes-file "~/Dropbox/org/refile.org")
+  ;; Define the custum capture templates
+  ;;(setq org-capture-templates
+  ;;    '(("t" "todo" entry (file org-default-notes-file)
+  ;;       "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
+  ;;      ("m" "Meeting" entry (file org-default-notes-file)
+  ;;       "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
+  ;;      ("d" "Diary" entry (file+datetree "~/Dropbox/org/diary.org")
+  ;;       "* %?\n%U\n" :clock-in t :clock-resume t)
+  ;;      ("i" "Idea" entry (file org-default-notes-file)
+  ;;       "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
+  ;;      ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
+  ;;       "** NEXT %? \nDEADLINE: %t") ))
+  ;;(setq org-refile-targets '((nil :maxlevel . 9)
+  ;;                           (org-agenda-files :maxlevel . 9)))
+  ;;(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
+  ;;(setq org-refile-use-outline-path t)                  ; Show full paths for refiling
+  
   ;; Switch to insert mode after selecting template in org-capture
   ;; This works with hybrid style. Use evil-insert-state in case of vim style.
-  (add-hook 'emacs-lisp-mode-hook 'turn-on-setnu-mode)
   (add-hook 'org-capture-mode-hook 'evil-hybrid-state)
-  ;; set org directory
-  (setq org-directory "~/Dropbox/org")
-  ;; file to store general notes
-  (setq org-default-notes-file "~/Dropbox/org/refile.org")
-  ;; Define the custum capture templates
-  (setq org-capture-templates
-      '(("t" "todo" entry (file org-default-notes-file)
-         "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
-        ("m" "Meeting" entry (file org-default-notes-file)
-         "* MEETING with %? :MEETING:\n%t" :clock-in t :clock-resume t)
-        ("d" "Diary" entry (file+datetree "~/Dropbox/org/diary.org")
-         "* %?\n%U\n" :clock-in t :clock-resume t)
-        ("i" "Idea" entry (file org-default-notes-file)
-         "* %? :IDEA: \n%t" :clock-in t :clock-resume t)
-        ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
-         "** NEXT %? \nDEADLINE: %t") ))
-)
+  ;; Agenda opens in current window
+  (setq org-agenda-window-setup 'current-window)
+  ;;(setq org-agenda-files '("~/Dropbox/org/"))
+
+;; === Editor Settings ===
+
+  (setq-default evil-escape-key-sequence "jj")
+  (setq-default evil-escape-delay 0.2)
+  (add-hook 'emacs-lisp-mode-hook 'turn-on-setnu-mode)
+
+;; === misc ===
+  (setq deft-directory "~/Dropbox/Notes")
+  )
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -371,7 +379,7 @@ you should place your code here."
  '(main-line-color2 "#333343")
  '(package-selected-packages
    (quote
-    (zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme soft-stone-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme majapahit-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cherry-blossom-theme busybee-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme pdf-tools tablist mu4e-maildirs-extension mu4e-alert ht helm-org-rifle deft engine-mode org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download htmlize gnuplot obsidian-theme tangotango-theme soft-charcoal-theme soft-morning-theme material-theme gandalf-theme flatui-theme clues-theme bubbleberry-theme helm-company helm-c-yasnippet company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
+    (color-theme-github-theme tango-light-theme moe-theme-theme xpm tomorrow-day-theme zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme soft-stone-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme majapahit-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cherry-blossom-theme busybee-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme pdf-tools tablist mu4e-maildirs-extension mu4e-alert ht helm-org-rifle deft engine-mode org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download htmlize gnuplot obsidian-theme tangotango-theme soft-charcoal-theme soft-morning-theme material-theme gandalf-theme flatui-theme clues-theme bubbleberry-theme helm-company helm-c-yasnippet company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))
  '(powerline-color1 "#222232")
  '(powerline-color2 "#333343")
  '(sml/active-background-color "#34495e")
