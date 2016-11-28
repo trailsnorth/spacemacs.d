@@ -1,21 +1,21 @@
 
 (require 'org-agenda)
 
-;; Some general settings
+; Some general settings
 (setq org-directory "~/Dropbox/org")
 (setq org-default-notes-file "~/Dropbox/org/refile.org")
 (defvar org-default-diary-file "~/Dropbox/org/diary.org")
-(setq org-agenda-files (quote ("~/Dropbox/org/")))
+(setq org-agenda-files '("~/Dropbox/org/"))
 
-;; Display properties
+; Display properties
 (setq org-cycle-separator-lines 0)
 (setq org-tags-column 80)
 (setq org-agenda-tags-column org-tags-column)
 
-;; Set default column view headings: Task Effort Clock_Summary
+; Set default column view headings: Task Effort Clock_Summary
 (setq org-columns-default-format "%50ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM %16TIMESTAMP_IA")
 
-;; == bh/helper-functions ==
+; == bh/helper-functions ==
 (defun bh/is-project-p ()
   "Any task with a todo keyword subtask"
   (save-restriction
@@ -73,11 +73,11 @@ Callers of this function already widen the buffer view."
 ;; == Custom State Keywords ==
 (setq org-use-fast-todo-selection t)
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
+  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
 	(sequence "WAITING(w@/!)" "INACTIVE(i@/!)" "|" "CANCELLED(c@/!)" "MEETING")))
 ;; Custom colors for the keywords
 (setq org-todo-keyword-faces
-      '(("TODO" :foreground "red" :weight bold)
+  '(("TODO" :foreground "red" :weight bold)
 	("NEXT" :foreground "blue" :weight bold)
 	("DONE" :foreground "forest green" :weight bold)
 	("WAITING" :foreground "orange" :weight bold)
@@ -86,7 +86,7 @@ Callers of this function already widen the buffer view."
 	("MEETING" :foreground "forest green" :weight bold)))
 ;; Auto-update tags whenever the state is changed
 (setq org-todo-state-tags-triggers
-      '(("CANCELLED" ("CANCELLED" . t))
+  '(("CANCELLED" ("CANCELLED" . t))
 	("WAITING" ("WAITING" . t))
 	("INACTIVE" ("WAITING") ("INACTIVE" . t))
 	(done ("WAITING") ("INACTIVE"))
@@ -113,7 +113,7 @@ Callers of this function already widen the buffer view."
 ;; == Capture Mode Settings ==
 ;; Define the custum capture templates
 (setq org-capture-templates
-       '(("t" "todo" entry (file org-default-notes-file)
+   '(("t" "todo" entry (file org-default-notes-file)
 	  "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
 	 ("b" "Blank" entry (file org-default-notes-file)
 	  "* %?\n%u")
@@ -128,10 +128,9 @@ Callers of this function already widen the buffer view."
 
 ;; == Refile ==
 ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
-;;(setq org-refile-targets (quote ((nil :maxlevel . 9)
-;;                                 (org-agenda-files :maxlevel . 9))))
-(setq org-refile-targets '((nil :maxlevel . 9)
-                                 (org-agenda-files :maxlevel . 9)))
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
 ;;  Be sure to use the full path for refile setup
 (setq org-refile-use-outline-path t)
 (setq org-outline-path-complete-in-steps nil)
