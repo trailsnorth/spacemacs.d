@@ -122,7 +122,7 @@ values."
    ;; directory. A string value must be a path to an image format supported
    ;; by your Emacs build.
    ;; If the value is nil then no banner is displayed. (default 'official)
-   dotspacemacs-startup-banner 'official
+   dotspacemacs-startup-banner 'nil
    ;; List of items to show in startup buffer or an association list of
    ;; the form `(list-type . list-size)`. If nil then it is disabled.
    ;; Possible values for list-type are:
@@ -138,13 +138,15 @@ values."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(tango-plus
-                         atom-one-dark
-                         twilight-bright
-                         espresso                        
+   dotspacemacs-themes '(
                          sanityinc-tomorrow-day
-                         soft-stone
                          flatui
+                         minimal-light
+                         atom-one-dark
+                         tango-plus
+                         twilight-bright
+                         espresso
+                         soft-stone
                          )
    ;; If non nil the cursor color matches the state color in GUI Emacs.
    dotspacemacs-colorize-cursor-according-to-state t
@@ -321,9 +323,44 @@ explicitly specified that a variable should be set before a package is loaded,
 you should place your code here."
 
 ;; === Org Settings ===
+(require 'org-agenda)
+(require 'org-protocol)
 
-  (load-file "~/.spacemacs.d/config/tn-org.el")
-  (setq helm-org-rifle-show-path t)
+; Some general settings
+(setq org-directory "~/Dropbox/org")
+(setq org-default-notes-file "~/Dropbox/org/refile.org")
+(defvar org-default-diary-file "~/Dropbox/org/diary.org")
+(setq org-agenda-files '("~/Dropbox/org/"))
+
+; Display properties
+(setq org-cycle-separator-lines 0)
+(setq org-tags-column 80)
+(setq org-agenda-tags-column org-tags-column)
+(setq org-startup-indented t)
+(setq org-hide-leading-stars t)
+; Agenda opens in current window
+(setq org-agenda-window-setup 'current-window)
+(setq org-agenda-skip-scheduled-if-done t)
+
+; The org heavy lifting
+(load-file "~/.spacemacs.d/config/tn-org.el")
+
+;; == Refile ==
+;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
+(setq org-refile-targets (quote ((nil :maxlevel . 9)
+                                 (org-agenda-files :maxlevel . 9))))
+
+;;  Be sure to use the full path for refile setup
+(setq org-refile-use-outline-path t)
+(setq org-outline-path-complete-in-steps nil)
+
+;; Allow refile to create parent tasks with confirmation
+(setq org-refile-allow-creating-parent-nodes 'confirm)
+
+;; == Archive ==
+(setq org-archive-location "archive/%s_archive::")
+(setq org-archive-file-header-format "#+FILETAGS: ARCHIVE\nArchived entries from file %s\n")
+
   ;;(setq org-todo-keywords
   ;;      '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELED")))
   ;; file to store general notes
@@ -344,23 +381,27 @@ you should place your code here."
   ;;                           (org-agenda-files :maxlevel . 9)))
   ;;(setq org-outline-path-complete-in-steps nil)         ; Refile in a single go
   ;;(setq org-refile-use-outline-path t)                  ; Show full paths for refiling
-  
+
   ;; Switch to insert mode after selecting template in org-capture
   ;; This works with hybrid style. Use evil-insert-state in case of vim style.
-  (add-hook 'org-capture-mode-hook 'evil-hybrid-state)
-  ;; Agenda opens in current window
-  (setq org-agenda-window-setup 'current-window)
-  ;;(setq org-agenda-files '("~/Dropbox/org/"))
+
 
 ;; === Editor Settings ===
 
-  (setq-default evil-escape-key-sequence "jj")
-  (setq-default evil-escape-delay 0.2)
-  (add-hook 'emacs-lisp-mode-hook 'turn-on-setnu-mode)
+(setq-default evil-escape-key-sequence "jj")
+(setq-default evil-escape-delay 0.2)
+;(add-hook 'emacs-lisp-mode-hook 'turn-on-setnu-mode)
+(add-hook 'org-capture-mode-hook 'evil-hybrid-state)
+(add-hook 'org-mode-hook (lambda ()
+    (define-key org-mode-map (kbd "C-c g") 'org-mac-grab-link)))
 
 ;; === misc ===
-  (setq deft-directory "~/Dropbox/Notes")
-  )
+(setq deft-directory "~/Dropbox/Notes")
+(setq helm-org-rifle-show-path t)
+)
+
+;;:::::::: The end of the all important user-config section :::::::::::::::::::::::
+
 
 ;; Do not write anything past this comment. This is where Emacs will
 ;; auto-generate custom variable definitions.
@@ -377,6 +418,7 @@ you should place your code here."
  '(hl-sexp-background-color "#1c1f26")
  '(main-line-color1 "#222232")
  '(main-line-color2 "#333343")
+ '(org-modules (quote (org-habit org-mac-link)))
  '(package-selected-packages
    (quote
     (color-theme-github-theme tango-light-theme moe-theme-theme xpm tomorrow-day-theme zonokai-theme zenburn-theme zen-and-art-theme underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tronesque-theme toxi-theme tao-theme tango-plus-theme tango-2-theme sunny-day-theme sublime-themes subatomic256-theme subatomic-theme spacegray-theme soothe-theme soft-stone-theme smyx-theme seti-theme reverse-theme railscasts-theme purple-haze-theme professional-theme planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pastels-on-dark-theme organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme noctilux-theme niflheim-theme naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme majapahit-theme lush-theme light-soap-theme jbeans-theme jazz-theme ir-black-theme inkpot-theme heroku-theme hemisu-theme hc-zenburn-theme gruvbox-theme gruber-darker-theme grandshell-theme gotham-theme flatland-theme firebelly-theme farmhouse-theme espresso-theme dracula-theme django-theme darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized cherry-blossom-theme busybee-theme birds-of-paradise-plus-theme badwolf-theme apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes afternoon-theme pdf-tools tablist mu4e-maildirs-extension mu4e-alert ht helm-org-rifle deft engine-mode org-projectile pcache org-present org org-pomodoro alert log4e gntp org-download htmlize gnuplot obsidian-theme tangotango-theme soft-charcoal-theme soft-morning-theme material-theme gandalf-theme flatui-theme clues-theme bubbleberry-theme helm-company helm-c-yasnippet company-statistics company auto-yasnippet yasnippet ac-ispell auto-complete ws-butler window-numbering which-key volatile-highlights vi-tilde-fringe uuidgen use-package toc-org spaceline powerline restart-emacs request rainbow-delimiters popwin persp-mode pcre2el paradox spinner org-plus-contrib org-bullets open-junk-file neotree move-text macrostep lorem-ipsum linum-relative link-hint info+ indent-guide ido-vertical-mode hydra hungry-delete hl-todo highlight-parentheses highlight-numbers parent-mode highlight-indentation hide-comnt help-fns+ helm-themes helm-swoop helm-projectile helm-mode-manager helm-make projectile pkg-info epl helm-flx helm-descbinds helm-ag google-translate golden-ratio flx-ido flx fill-column-indicator fancy-battery eyebrowse expand-region exec-path-from-shell evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-search-highlight-persist evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state smartparens evil-indent-plus evil-iedit-state iedit evil-exchange evil-escape evil-ediff evil-args evil-anzu anzu evil goto-chg undo-tree eval-sexp-fu highlight elisp-slime-nav dumb-jump f s diminish define-word column-enforce-mode clean-aindent-mode bind-map bind-key auto-highlight-symbol auto-compile packed dash aggressive-indent adaptive-wrap ace-window ace-link ace-jump-helm-line helm avy helm-core popup async quelpa package-build spacemacs-theme)))

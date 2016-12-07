@@ -1,17 +1,4 @@
 
-(require 'org-agenda)
-
-; Some general settings
-(setq org-directory "~/Dropbox/org")
-(setq org-default-notes-file "~/Dropbox/org/refile.org")
-(defvar org-default-diary-file "~/Dropbox/org/diary.org")
-(setq org-agenda-files '("~/Dropbox/org/"))
-
-; Display properties
-(setq org-cycle-separator-lines 0)
-(setq org-tags-column 80)
-(setq org-agenda-tags-column org-tags-column)
-
 ; Set default column view headings: Task Effort Clock_Summary
 (setq org-columns-default-format "%50ITEM(Task) %10Effort(Effort){:} %10CLOCKSUM %16TIMESTAMP_IA")
 
@@ -73,20 +60,23 @@ Callers of this function already widen the buffer view."
 ;; == Custom State Keywords ==
 (setq org-use-fast-todo-selection t)
 (setq org-todo-keywords
-  '((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
-	(sequence "WAITING(w@/!)" "INACTIVE(i@/!)" "|" "CANCELLED(c@/!)" "MEETING")))
+'((sequence "TODO(t)" "NEXT(n)" "ACTIVE(a)" "|" "DONE(d)")
+	(sequence "WAITING(w@/!)" "INACTIVE(i@/!)" "|" "CANCELLED(c@/!)" "MEETING(m)")))
+
 ;; Custom colors for the keywords
 (setq org-todo-keyword-faces
   '(("TODO" :foreground "red" :weight bold)
 	("NEXT" :foreground "blue" :weight bold)
-	("DONE" :foreground "forest green" :weight bold)
+    ("ACTIVE" :foreground "cornflower blue" :weight bold)
+    ("DONE" :foreground "forest green" :weight bold)
 	("WAITING" :foreground "orange" :weight bold)
 	("INACTIVE" :foreground "magenta" :weight bold)
 	("CANCELLED" :foreground "forest green" :weight bold)
 	("MEETING" :foreground "forest green" :weight bold)))
+
 ;; Auto-update tags whenever the state is changed
 (setq org-todo-state-tags-triggers
-  '(("CANCELLED" ("CANCELLED" . t))
+'(("CANCELLED" ("CANCELLED" . t))
 	("WAITING" ("WAITING" . t))
 	("INACTIVE" ("WAITING") ("INACTIVE" . t))
 	(done ("WAITING") ("INACTIVE"))
@@ -113,7 +103,8 @@ Callers of this function already widen the buffer view."
 ;; == Capture Mode Settings ==
 ;; Define the custum capture templates
 (setq org-capture-templates
-   '(("t" "todo" entry (file org-default-notes-file)
+   '(
+   	 ("t" "todo" entry (file org-default-notes-file)
 	  "* TODO %?\n%u\n%a\n" :clock-in t :clock-resume t)
 	 ("b" "Blank" entry (file org-default-notes-file)
 	  "* %?\n%u")
@@ -124,7 +115,9 @@ Callers of this function already widen the buffer view."
 	 ("i" "Idea" entry (file org-default-notes-file)
 	  "* %? :IDEA: \n%u" :clock-in t :clock-resume t)
 	 ("n" "Next Task" entry (file+headline org-default-notes-file "Tasks")
-	  "** NEXT %? \nDEADLINE: %t") ))
+	  "** NEXT %? \nDEADLINE: %t")
+	
+	))
 
 ;; == Refile ==
 ;; Targets include this file and any file contributing to the agenda - up to 9 levels deep
@@ -142,11 +135,12 @@ Callers of this function already widen the buffer view."
 (setq org-archive-location "archive/%s_archive::")
 (setq org-archive-file-header-format "#+FILETAGS: ARCHIVE\nArchived entries from file %s\n")
 
+;; == Mac-Link ==
+(require 'org-mac-link)
+(setq org-modules '(org-mac-link))
 
-
-;; == Habits ==
+      ;; == Habits ==
 (require 'org-habit)
-
 (setq org-modules '(org-habit))
 (setq org-habit-show-habits-only-for-today t)
 
@@ -275,41 +269,43 @@ show this warning instead."
 
 ;; Custom agenda command definitions
 (setq org-agenda-custom-commands
-      '(("h" "Habits" agenda "STYLE=\"habit\""
+  '(("h" "Habits" agenda "STYLE=\"habit\""
 	 ((org-agenda-overriding-header "Habits")
 	  (org-agenda-sorting-strategy
 	   '(todo-state-down effort-up category-keep))))
-	(" " "Export Schedule" ((agenda "" ((org-agenda-overriding-header "Today's Schedule:")
-					    (org-agenda-ndays 1)
-					    (org-agenda-start-on-weekday nil)
-					    (org-agenda-start-day "+0d")
-					    (org-agenda-todo-ignore-deadlines nil)))
-				(tags-todo "-CANCELLED-ARCHIVE/!NEXT"
-					   ((org-agenda-overriding-header "Next Tasks:")
-					    ))
-				(tags "REFILE-ARCHIVE-REFILE=\"nil\""
-				      ((org-agenda-overriding-header "Tasks to Refile:")
-				       (org-tags-match-list-sublevels nil)))
-				(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVEr/!"
-					   ((org-agenda-overriding-header "Active Projects:")
-					    (org-agenda-skip-function 'gs/select-projects)))
-				(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVE-STYLE=\"habit\"/!-NEXT"
-					   ((org-agenda-overriding-header "Standalone Tasks:")
-					    (org-agenda-skip-function 'gs/select-standalone-tasks)))
-				(agenda "" ((org-agenda-overriding-header "Week At A Glance:")
-					    (org-agenda-ndays 5)
-					    (org-agenda-start-day"+1d")
-					    (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %s [%b] ")))))
-				(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVE/!-NEXT"
-					   ((org-agenda-overriding-header "Remaining Project Tasks:")
-					    (org-agenda-skip-function 'gs/select-project-tasks)))
-				(tags "INACTIVE-ARCHIVE"
-				      ((org-agenda-overriding-header "Inactive Projects and Tasks")
-				       (org-tags-match-list-sublevels nil)))
-				(tags "ENDOFAGENDA"
-				      ((org-agenda-overriding-header "End of Agenda")
-				       (org-tags-match-list-sublevels nil))))
-	 ((org-agenda-start-with-log-mode t)
+
+    (" " "Export Schedule" ((agenda "" 
+   	 ((org-agenda-overriding-header "Today's Schedule:")
+	  (org-agenda-ndays 1)
+	  (org-agenda-start-on-weekday nil)
+	  (org-agenda-start-day "+0d")
+      (org-agenda-todo-ignore-deadlines nil)))
+	  (tags-todo "-CANCELLED-ARCHIVE/!NEXT"   
+	 ((org-agenda-overriding-header "Next Tasks:")))
+		(tags "REFILE-ARCHIVE-REFILE=\"nil\""
+	 ((org-agenda-overriding-header "Tasks to Refile:")
+		(org-tags-match-list-sublevels nil)))
+		(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVEr/!"
+	 ((org-agenda-overriding-header "Active Projects:")
+		(org-agenda-skip-function 'gs/select-projects)))
+		(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVE-STYLE=\"habit\"/!-NEXT"
+	 ((org-agenda-overriding-header "Standalone Tasks:")
+		(org-agenda-skip-function 'gs/select-standalone-tasks)))
+	  (agenda "" ((org-agenda-overriding-header "Week At A Glance:")
+		(org-agenda-ndays 5)
+		(org-agenda-start-day"+1d")
+		(org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %s [%b] ")))))
+		(tags-todo "-INACTIVE-HOLD-CANCELLED-REFILE-ARCHIVE/!-NEXT"
+	 ((org-agenda-overriding-header "Remaining Project Tasks:")
+		(org-agenda-skip-function 'gs/select-project-tasks)))
+		(tags "INACTIVE-ARCHIVE"
+	 ((org-agenda-overriding-header "Inactive Projects and Tasks")
+	    (org-tags-match-list-sublevels nil)))
+		(tags "ENDOFAGENDA"
+	 ((org-agenda-overriding-header "End of Agenda")
+	  (org-tags-match-list-sublevels nil))))
+	 
+	 ((org-agenda-start-with-log-mode nil)
 	  (org-agenda-log-mode-items '(clock))
 	  (org-agenda-prefix-format '((agenda . "  %-12:c%?-12t %(gs/org-agenda-add-location-string)% s")
 				      (timeline . "  % s")
@@ -386,6 +382,17 @@ show this warning instead."
 	      (delete-region (region-beginning) (region-end)))
 	  )))))
 (add-hook 'org-finalize-agenda-hook 'gs/remove-agenda-regions)
+
+;; Modify face for DONE lines
+(defun my/modify-org-done-face ()
+  (setq org-fontify-done-headline t)
+;  (set-face-attribute 'org-done nil :strike-through t)
+  (set-face-attribute 'org-headline-done nil
+;                     :strike-through t
+                      :foreground "gray"))
+
+(eval-after-load "org"
+  (add-hook 'org-add-hook 'my/modify-org-done-face))
 
 (provide 'tn-org)
 ;;; tn-org.el ends here
